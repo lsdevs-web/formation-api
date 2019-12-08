@@ -2,10 +2,35 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\InvoiceRepository")
+ * @ApiResource(
+ *
+ *     attributes={
+ *     "pagination_enabled"=true,
+ *     "pagination_items_per_page"=20,
+ *     "order": {"amount": "desc"}
+ *     },
+ *
+ *     normalizationContext={"groups"={"invoices_read"}},
+ *     denormalizationContext={"disable_type_enforcement"=true},
+ *
+ *     itemOperations={"GET", "PUT", "DELETE", "increment"={
+ *     "method"="post",
+ *     "path"="/invoices/{id}/increment",
+ *     "controller"="App\Controller\InvoiceIncrementController",
+ *     "swagger_context"={"summary"="Incrémente une facture", "description"="Incrémente le chrono d'une facture"}
+ *     }}
+ * )
+ * @ApiFilter(OrderFilter::class, properties={"amount", "sentAt"})
  */
 class Invoice
 {
@@ -13,34 +38,59 @@ class Invoice
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"invoices_read", "customers_read"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"invoices_read", "customers_read"})
+     * @Assert\NotBlank(message="Le montant est obligatoire")
+     * @Assert\Type(type="numeric", message="Le montant doît être un chiffre")
      */
     private $amount;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"invoices_read", "customers_read"})
+     * @Assert\NotBlank(message="La date d'envoie doit être renseignée")
      */
     private $sentAt;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"invoices_read", "customers_read"})
+     * @Assert\NotBlank(message="Le statut de la facture est obligatoire")
+     * @Assert\Choice(choices={"SENT", "PAID", "CANCELED"}, message="Le statut n'est pas correct")
      */
     private $status;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Customer", inversedBy="invoices")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"invoices_read"})
+     * @Assert\NotBlank(message="Le client de la facture doit être renseigné")
      */
     private $customer;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"invoices_read", "customers_read"})
+     * @Assert\NotBlank(message="Le chrono doit être renseigné")
+     * @Assert\Type(type="integer", message="Le chrono doit être un nombre")
      */
     private $chrono;
+
+
+    /**
+     * Permet de récupérer le user à qui appartient finalement la facture
+     * @Groups({"invoices_read"})
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->customer->getUser();
+    }
 
     public function getId(): ?int
     {
@@ -52,19 +102,19 @@ class Invoice
         return $this->amount;
     }
 
-    public function setAmount(float $amount): self
+    public function setAmount($amount): self
     {
         $this->amount = $amount;
 
         return $this;
     }
 
-    public function getSentAt(): ?\DateTimeInterface
+    public function getSentAt(): ?DateTimeInterface
     {
         return $this->sentAt;
     }
 
-    public function setSentAt(\DateTimeInterface $sentAt): self
+    public function setSentAt($sentAt): self
     {
         $this->sentAt = $sentAt;
 
@@ -100,7 +150,7 @@ class Invoice
         return $this->chrono;
     }
 
-    public function setChrono(int $chrono): self
+    public function setChrono($chrono): self
     {
         $this->chrono = $chrono;
 

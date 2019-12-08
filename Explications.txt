@@ -1,0 +1,164 @@
+On installe Api Platform : composer require api
+
+UTILISATION :
+
+
+    Il faut utiliser des annotations @ApiRessource() sur les Entity que l'on veut exposer
+
+
+CONFIGURATION :
+
+
+    On peut configurer les options d'Api Platform dans le fichier api_platform.yaml
+
+    Dans ce fichier on peut par exemple définir une configuration pour la pagination de nos collections
+    On peut choisir de l'activer ou pas, choisir le nb d'items par page, activer ou pas si le client à le droit d'utiliser des paramètres dans sa requête
+    (Par exemple activer la pagination avec ?pagination=true)
+
+    On peut aussi activer ou pas le fait que le client puisse utiliser un paramètre pour choisir lui-même le nombre d'items par page
+    (Par exemple avec ?itemsPerPage=15)
+
+    On peut modifier le nom de tous les paramètres
+    (Par exemple, au lieu d'utiliser ?itemsPerPage, on peut le renommer en "?count")
+
+    On peut surcharger la configuration d'Api Platform en utilisation les annotations directement sur nos Entity en utilisant @ApiRessource(attributes={})
+    Par exemple : @ApiRessource(attributes={"pagination_enabled"=true} )
+
+    On peut définir un ordre de tri de nos Entity en l'ajoutant dans les attributes de @ApiRessource()
+    Le premier paramètres de l'ordre est en fonction de quoi on le tri : c'est à dire une propriété de notre Entity
+
+    (Par exemple : @ApiRessource(attributes={"order": {"amount": "desc"}} où @ApiRessource(attributes={"order": {"sentAt": "desc"}})
+
+
+LES FILTRES :
+
+
+    On peut filtrer les données avec pleins de filtres différents (ApiPlatform doc)
+
+    Il faut activer les filtres avec l'annotation @ApiFilter() dans l'Entity
+    (Par exemple : @ApiFilter(SearchFilter::class) /!\ Ne pas oublier de use SearchFilter
+
+    On doit préciser sur quelles propriétés on peut faire des recherches, sinon on pourra le faire sur toutes. Il faut utiliser properties={} dans @ApiFilter()
+    Properties prends en paramètres des attributs de nos entités
+    (Par exemple : @ApiFilter(SearchFilter::class, properties={"firstName", "lastName", "company"})
+
+    On peut aussi définir une stratégie de recherche (Si on ne définit pas de properties, on ne peut pas définir de stratégie et sera donc tout le temps en EXACT)
+
+    La stratégie par défaut cherche EXACTEMENT (exact) le paramètre recherché (Par exemple Paul cherchera Paul et Pa ne cherchera pas Paul)
+
+    Types : exact, partial, start, end et word_start
+    (Par exemple : @ApiFilter(SearchFilter::class, properties={"firstName": "partial", "lastName", "company"})
+
+    On peut utiliser plusieurs annotation @ApiFilter() !
+
+    @ApiFilter(OrderFilter::class) /!\ Ne pas oublier de use OrderFilter
+    On peut directement donner un ordre aux informations
+    On utilise en requête /api/invoices?order[sentAt]=asc
+
+    On peut donner des properties à OrderFilter::class pour dire sur quelles propriétés on peut l'utiliser (on ne pourra pas sur les autres)
+    @ApiFilter(OrderFilter::class, properties={"amount", "sentAt"})
+
+
+    On peut cumuler les filtres de recherche et les filtres d'ordres !
+
+    /api/customers?firstName=jerome&order[lastName]=desc
+
+    On peut utiliser des @ApiFilters() sur des relations d'entity voir ApiPlatform doc (Nested Properties)
+
+
+
+NORMALISATION (GROUPE):
+
+
+        Pour choisir ce que l'on veut exposer ou pas d'une Entity cela se passe lors de la Normalisation/Denormalisation
+        Pour le configurer il faut utiliser normalizationContext={} dans @ApiRessource qui configure ce qu'il va se passer pendant la normalisation.
+        On définit un groupe dans le context de normalisation
+        (Par exemple :
+                * @ApiResource(
+                * normalizationContext={
+                *     "groups"={"customers_read"}
+                *     }
+                * )
+        )
+
+
+        Une fois le groupe définit, il faut annoter les attributs de notre entity avec @Groups pour leur dire qu'ils en font partie.
+        Les attributs ne faisant pas partie du groupe ne seront donc pas exposer pendant la normalisation
+
+        (Par exemple : @Groups({"customers_read"}) )
+
+        On expose d'abord toutes les données quand on créé l'API, ensuite on écrème, pour cela on créé un context de normalisation, un groupe et on définit ce qu'il y a dans ce groupe
+
+        On peut utiliser plusieurs groupes, par exemple pour un user qui à une collection de factures :
+
+                Si l'user est dans un groupe, les factures dans un autre, et qu'on veut pouvoir voir toutes ses factures,
+                il faut ajouter le groupe du user aux factures !
+
+                Par exemple : @Groups({"customers_read", "invoices_read"})
+
+                En gros, quand on demande une facture, on à les données du clients aussi
+
+        Attention aux boucles infini quand on appel des entity avec des relations :
+            Si je viens de mes factures pour regarder un customers qui à lui même des factures, cela va rappeler mes factures qui vont regarder le customer qui vont rappeler mes factures
+
+
+LES OPERATIONS :
+
+
+    Pour activer ou désactiver des opérations, cela se passe dans @ApiRessource()
+    On utilise  collectionOperations={"GET"},
+                itemOperations={"GET"},
+
+    On peut gérer le chemin de l'opération en question :
+    Par exemple, au lieu d'utiliser /api/customers on peut le transformer en /api/clients
+    On utilise collectionOperations={"GET"={"path"="/clients"},
+               itemOperations={"GET"={"path"="/clients/{id}"},
+
+
+    On peut rajouter des sous-ressources avec @ApiSubRessource()
+    On peut y passer des paramètres, en passant par @ApiRessource()
+    On utilise subressourceOperations={"invoices_get_subressource"={"path"="/clients/{id}/factures"}}
+
+    On peut configurer comment la subressource réagit quand on l'appelle
+    Par exemple, si dans mon customer je déclare une subressource invoices_get_subressource, je peux modifier son compter dans la classe Invoices
+    On l'ajoute dans @ApiRessource() et on utilise
+
+    subressourceOperation={"api_customers_invoices_get_subressource"={
+    "normalization_context"={
+    "groups"={"invoices_subressource"}
+    }
+    }}
+
+    Une fois que l'on à créé le groupe, on fait comme d'habitude, on l'utilise sur les attributs que l'on souhaite exposer
+
+
+    On peut créer nos propres opérations
+
+    Pour cela on créé un Controller qui __invoke(Invoice $data)
+    Ensuite dans notre Entity on créé un nouvel itemOperations :
+
+    itemOperations={"GET", "PUT", "DELETE", "increment"={
+     *     "method"="post",
+     *     "path"="/invoices/{id}/increment",
+     *     "controller"="App\Controller\InvoiceIncrementController"
+     *     }}
+
+
+
+GESTION DES ERREURS :
+
+
+    Pour gérer via Symfony des erreurs qui serait en conflits avec ORM ou ApiPlatform on utilise :
+
+    denormalizationContext={"disable_type_enforcement"=true}
+
+    Ne pas oublier de supprimer dans la méthode set le type hint
+
+
+LES REQUÊTES :
+
+
+    http://XXX/api/customers?firstName=rolan&lastName=maury
+    http://XXX//api/invoices?order[sentAt]=asc
+    http://XXX/api/customers?firstName=jerome&order[lastName]=desc
+
