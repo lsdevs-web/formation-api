@@ -155,6 +155,56 @@ GESTION DES ERREURS :
     Ne pas oublier de supprimer dans la méthode set le type hint
 
 
+AUTHENTIFICATION :
+
+    require "lexik/jwt-authentication-bundle"
+    fichier lexik_jwt_authentication => .env key privatec
+
+    > OpenSSL générer clef
+    $ mkdir -p config/jwt
+    $ openssl genpkey -out config/jwt/private.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096
+    $ openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout
+
+    > security.yaml
+
+    registration:
+                pattern: ^/api/users
+                anonymous: true
+                stateless: true
+                methods: [POST]
+
+    login:
+                pattern:  ^/api/login
+                stateless: true
+                anonymous: true
+                json_login:
+                    check_path:               /api/login_check
+                    success_handler:          lexik_jwt_authentication.handler.authentication_success
+                    failure_handler:          lexik_jwt_authentication.handler.authentication_failure
+
+    api:
+                pattern:   ^/api
+                stateless: true
+                anonymous: true
+                guard:
+                    authenticators:
+                        - lexik_jwt_authentication.jwt_token_authenticator
+
+        access_control:
+            - { path: ^/api/customers, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: ^/api/invoices, roles: IS_AUTHENTICATED_FULLY }
+            - { path: ^/api/users, roles: IS_AUTHENTICATED_FULLY, methods:['GET', 'PUT', 'DELETE', 'PATCH'] }
+
+
+
+    > routes.yaml
+
+    api_login_check:
+        path: /api/login_check
+
+
+
+
 LES REQUÊTES :
 
 
