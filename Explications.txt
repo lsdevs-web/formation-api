@@ -204,6 +204,30 @@ AUTHENTIFICATION :
 
 
 
+POUR ENCODER LE MOT DE PASSE :
+
+
+    Il faut se brancher à un event du kernel (view pour avoir le pre_write)
+    On créé une classe dans un dossier Events qui implémente EventSubscriberInterface
+    EventSubscriberInterface est une classe abstraite qui a besoin de la méthode getSubscribedEvents()
+
+    VOIR PasswordEncoderSubscriber.php
+
+    ATTENTION LES EVENEMENTS DU KERNEL SONT APPELER POUR TOUTES REQUETES
+
+    VOIR InvoiceChronoSubscriber.php
+    VOIR CustomerUserSubscriber.php
+    VOIR JwtCreatedSubscriber.php /!\ services.yaml
+
+
+
+EMPECHER LES UTILISATEURS DE VOIR CE QUI NE LEUR APPARTIENT PAS :
+
+    Il faut modifier les requêtes doctrine
+    VOIR Doctrine\CurrentUserExtension.php
+
+
+
 
 LES REQUÊTES :
 
