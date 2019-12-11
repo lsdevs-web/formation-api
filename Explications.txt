@@ -227,6 +227,48 @@ EMPECHER LES UTILISATEURS DE VOIR CE QUI NE LEUR APPARTIENT PAS :
     VOIR Doctrine\CurrentUserExtension.php
 
 
+UTILISER REACT:
+
+	composer require encore
+	yarn install
+
+	yarn add sass-loader node-sass postcss-loader autoprefixer expose-loader
+	yarn add
+
+	encore dev-server --host 127.0.0.1 --port 8080 --https
+
+	WEBPACK :
+	
+		.enableSassLoader
+		.enablePostCssLoader
+		.enableReactPreset
+	
+	postcss.config.js :
+            module.exports = {
+              plugins: {
+                'autoprefixer': {},
+              }
+            };
+
+	
+	Dans App.js :
+
+	import React, {Component,Fragment} from 'react';
+	import ReactDOM from 'react-dom';
+	import {HashRouter, Switch, Route} from "react-router-dom";
+
+	const App = () => {
+	
+	return 
+	
+	};
+
+	const rootElement = document.querySelector("#app");
+	ReactDOM.render(<App/>, rootElement);
+
+	
+	
+
 
 
 LES REQUÊTES :
