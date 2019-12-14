@@ -8,9 +8,9 @@ const Navbar = (props) => {
     const {isAuth, setIsAuth} = useContext(AuthContext);
 
     const handleLogout = ({ history }) => {
+        history.push("/login");
         AuthApi.logout();
         setIsAuth(false);
-        history.push("/login");
     };
 
     return (

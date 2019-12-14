@@ -11,11 +11,14 @@ import {HashRouter, Route, Switch, withRouter} from "react-router-dom";
 import ReactDOM from 'react-dom';
 import Navbar from "./Components/Navbar";
 import HomePage from "./Components/Pages/HomePage";
+import CustomersPage from "./Components/Pages/CustomersPage";
 import CustomerPage from "./Components/Pages/CustomerPage";
 import LoginPage from "./Components/Pages/LoginPage";
 import AuthApi from "./Services/AuthApi";
 import AuthContext from "./Context/AuthContext";
 import PrivateRoute from "./Components/PrivateRoute";
+import InvoicePage from "./Components/Pages/InvoicePage";
+import RegisterPage from "./Components/Pages/RegisterPage";
 
 require('../css/app.scss');
 
@@ -34,8 +37,7 @@ const App = () => {
         <AuthContext.Provider value={{
             isAuth,
             setIsAuth
-        }}
-        >
+        }}>
 
 
             <HashRouter>
@@ -48,7 +50,13 @@ const App = () => {
 
                         <Route path="/login" component={LoginPage}/>
 
-                        <PrivateRoute path="/customers" component={CustomerPage}/>
+                        <Route path="/register" component={RegisterPage}/>
+
+                        <PrivateRoute path="/customers/:id" component={CustomerPage}/>
+
+                        <PrivateRoute path="/customers" component={CustomersPage}/>
+
+                        <PrivateRoute path="/invoices/:id" component={InvoicePage}/>
 
                         <PrivateRoute path="/invoices" component={InvoicesPage}/>
 

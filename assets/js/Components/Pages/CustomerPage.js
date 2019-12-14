@@ -1,130 +1,148 @@
 import React, {useEffect, useState} from 'react';
-import Pagination from "../Pagination";
-import CustomersApi from "../../Services/CustomersApi";
+import Field from "../Forms/Field";
+import {Link} from "react-router-dom";
+import Axios from "axios";
 
 const CustomerPage = (props) => {
 
-    const [customers, setCustomers] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [search, setSearch] = useState("");
+
+    // On chope l'id dans l'url (si pas d'id alors = new)
+    const {id = "new"} = props.match.params;
 
 
-    // Permet de récupérer les customers
-    const fetchCustomer = async () => {
+    // Un state pour le customer = un objet avec des propriétés
+    const [customer, setCustomer] = useState({
+        lastName: "",
+        firstName: "",
+        email: "",
+        company: ""
+    });
+
+    // Un state pour les erreurs = le même que le customer car ce sera sur les mêmes propriétés
+    const [errors, setErrors] = useState({
+        lastName: "",
+        firstName: "",
+        email: "",
+        company: ""
+    });
+
+    // Modifier ou créer ?
+    const [editing, setEditing] = useState(false);
+
+    // Requête http async await
+    const fetchCustomer = async id => {
+
         try {
-            const data = await CustomersApi.findAll();
-            setCustomers(data);
+            const data = await Axios
+                .get("https://localhost:8000/api/customers/" + id)
+                .then(response => response.data);
+
+            // On extrait de data les données que l'on veut
+            const {firstName, lastName, email, company} = data;
+
+            // On met notre state à jour avec les données reçu
+            setCustomer({firstName, lastName, email, company});
+
         } catch (e) {
-            console.log(e.response);
+            console.log(e.reponse)
         }
     };
 
-    // Au chargement du composant on va chercher les customers
     useEffect(() => {
-        fetchCustomer();
-    }, []);
+        if (id !== "new") {
+            setEditing(true);
+            fetchCustomer(id);
+        }
+    }, [id]);
 
 
-    // Gestion de la suppression d'un client
-    const handleDelete = async (id) => {
+    const handleChange = ({target}) => {
+        const {name, value} = target;
 
-        const originaleCustomer = [...customers];
+        setCustomer({...customer, [name]: value});
+    };
 
-        setCustomers(customers.filter(customer => customer.id !== id));
+    const handleSubmit = async event => {
+
+        event.preventDefault();
+
 
         try {
-            await CustomersApi.delete(id)
+
+            if (editing) {
+                const response = await Axios
+                    .put("https://localhost:8000/api/customers/" + id, customer);
+            } else {
+                const response = await Axios.post("https://localhost:8000/api/customers", customer);
+                props.history.replace("/customers");
+            }
+
+            setErrors({});
+
         } catch (e) {
-            setCustomers(originaleCustomer);
-            console.log(e.response);
+
+            if (e.response.data.violations) {
+
+                const ApiErrors = {};
+                e.response.data.violations.forEach(violation => {
+                    ApiErrors[violation.propertyPath] = violation.message;
+                });
+
+                setErrors(ApiErrors);
+            }
+
         }
+
     };
-
-    // Gestion du changement de page
-    const handleChangePage = (page) => {
-        setCurrentPage(page);
-    };
-
-    // Gestion de la recherche
-    const handleSearch = (event) => {
-        const value = event.target.value;
-        setSearch(value);
-        setCurrentPage(1);
-    };
-
-
-    const itemsPerPage = 10;
-
-    // Filtrage des customers en fonction de la recherche
-    const filteredCustomer = customers.filter(
-        c =>
-            c.firstName.toLowerCase().includes(search.toLowerCase()) ||
-            c.lastName.toLowerCase().includes(search.toLowerCase()) ||
-            c.email.toLowerCase().includes(search.toLowerCase()) ||
-            (c.company && c.company.toLowerCase().includes(search.toLowerCase()))
-    );
-
-    // Pagination des données
-    const paginatedCustomers = Pagination.getDate(filteredCustomer, currentPage, itemsPerPage);
-
 
     return (
         <>
-            <h1>Liste des clients</h1>
+            {!editing && <h1>Création d'un client</h1> || <h1>Modification du client</h1>}
 
-            <div className="form-group">
-                <input type="text" onChange={handleSearch} value={search} className="form-control"
-                       placeholder={"Rechercher"}/>
-            </div>
 
-            <table className="table table-hover">
-                <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Client</th>
-                    <th>Email</th>
-                    <th>Entreprise</th>
-                    <th className="text-center">Factures</th>
-                    <th className="text-center">Montant total</th>
-                    <th/>
-                </tr>
-                </thead>
-                <tbody>
-                {paginatedCustomers.map(customer =>
-                    <tr key={customer.id}>
-                        <td>{customer.id}</td>
-                        <td>
-                            <a href="#">{customer.firstName} {customer.lastName}</a>
-                        </td>
-                        <td>{customer.email}</td>
-                        <td>{customer.company}</td>
-                        <td className="text-center">
-                        <span className="badge badge-primary">
-                            {customer.invoices.length}
-                        </span>
-                        </td>
-                        <td className="text-center">
-                            {customer.totalAmount.toLocaleString()} €
-                        </td>
-                        <td>
-                            <button disabled={customer.invoices.length > 0}
-                                    onClick={() => handleDelete(customer.id)}
-                                    className="btn btn-sm btn-danger">Supprimer
-                            </button>
-                        </td>
-                    </tr>)}
-
-                </tbody>
-            </table>
-
-            {itemsPerPage < filteredCustomer.length && (
-                <Pagination
-                    currentPage={currentPage}
-                    itemsPerPage={itemsPerPage}
-                    length={filteredCustomer.length}
-                    onPageChanged={handleChangePage}
+            <form onSubmit={handleSubmit}>
+                <Field
+                    name="lastName"
+                    label="Nom de famille"
+                    placeholder="Nom de famille du client"
+                    value={customer.lastName}
+                    onChange={handleChange}
+                    error={errors.lastName}
                 />
-            )}
+                <Field
+                    name="firstName"
+                    label="Prénom"
+                    placeholder="Prénom du client"
+                    value={customer.firstName}
+                    onChange={handleChange}
+                    error={errors.firstName}
+                />
+                <Field
+                    name="email"
+                    label="Email"
+                    placeholder="Email du client"
+                    type="email"
+                    value={customer.email}
+                    onChange={handleChange}
+                    error={errors.email}
+                />
+                <Field
+                    name="company"
+                    label="Entreprise"
+                    placeholder="Entreprise du client"
+                    value={customer.company}
+                    onChange={handleChange}
+                    error={errors.company}
+                />
+
+
+                <div className="form-group">
+                    <button type="submit" className="btn btn-success">Enregistrer</button>
+                    <Link to="/customers" className="btn btn-link">Retour à la liste</Link>
+                </div>
+
+            </form>
+
         </>
     );
 };
