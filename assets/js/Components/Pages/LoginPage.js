@@ -2,6 +2,7 @@ import React, {useContext, useState} from 'react';
 import AuthApi from "../../Services/AuthApi";
 import AuthContext from "../../Context/AuthContext";
 import Field from "../Forms/Field";
+import {toast} from "react-toastify";
 
 const LoginPage = (props) => {
 
@@ -33,10 +34,12 @@ const LoginPage = (props) => {
             await AuthApi.authenticate(credentials);
             setError("");
             setIsAuth(true);
+            toast.success("Vous êtes connecté");
             props.history.replace("/customers");
         } catch (e) {
 
-            setError("Informations incorrects")
+            setError("Informations incorrects");
+            toast.error("Un erreur est survenue");
         }
 
 

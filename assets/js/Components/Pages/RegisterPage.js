@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import Field from "../Forms/Field";
 import {Link} from "react-router-dom";
 import Axios from "axios";
+import {toast} from "react-toastify";
 
 const RegisterPage = (props) => {
 
@@ -33,6 +34,8 @@ const RegisterPage = (props) => {
         if (user.password !== user.passwordConfirm) {
             ApiErrors.passwordConfirm = "Vos mots de passe ne correspondent pas";
             setErrors(ApiErrors);
+            toast.error("Des erreurs dans votre formulaire");
+
 
             return;
         }
@@ -42,6 +45,7 @@ const RegisterPage = (props) => {
 
             const response = await Axios.post("https://localhost:8000/api/users", user);
             setErrors({});
+            toast.success("Vous êtes inscrit");
             props.history.replace("/login");
         } catch (e) {
 
@@ -55,6 +59,8 @@ const RegisterPage = (props) => {
 
                 setErrors(ApiErrors);
             }
+            toast.error("Erreurs dans votre formulaire");
+
         }
 
     };

@@ -19,6 +19,8 @@ import AuthContext from "./Context/AuthContext";
 import PrivateRoute from "./Components/PrivateRoute";
 import InvoicePage from "./Components/Pages/InvoicePage";
 import RegisterPage from "./Components/Pages/RegisterPage";
+import {toast, ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 require('../css/app.scss');
 
@@ -70,6 +72,7 @@ const App = () => {
 
             </HashRouter>
 
+            <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />
 
         </AuthContext.Provider>
     )

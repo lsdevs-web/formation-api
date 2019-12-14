@@ -2,12 +2,15 @@ import React, {useEffect, useState} from 'react';
 import Field from "../Forms/Field";
 import {Link} from "react-router-dom";
 import Axios from "axios";
+import {toast} from "react-toastify";
+import FormLoader from "../Loaders/FormLoader";
 
 const CustomerPage = (props) => {
 
 
     // On chope l'id dans l'url (si pas d'id alors = new)
     const {id = "new"} = props.match.params;
+    const [loading, setLoading] = useState(false);
 
 
     // Un state pour le customer = un objet avec des propriétés
@@ -42,14 +45,18 @@ const CustomerPage = (props) => {
 
             // On met notre state à jour avec les données reçu
             setCustomer({firstName, lastName, email, company});
+            setLoading(false);
 
         } catch (e) {
+            toast.error("Le client n'a pas pu être chargé");
+
             console.log(e.reponse)
         }
     };
 
     useEffect(() => {
         if (id !== "new") {
+            setLoading(true);
             setEditing(true);
             fetchCustomer(id);
         }
@@ -68,16 +75,19 @@ const CustomerPage = (props) => {
 
 
         try {
+            setErrors({});
 
             if (editing) {
                 const response = await Axios
                     .put("https://localhost:8000/api/customers/" + id, customer);
+                toast.success("Le client à été modifié");
+
             } else {
                 const response = await Axios.post("https://localhost:8000/api/customers", customer);
+                toast.success("Le client à été créé");
                 props.history.replace("/customers");
             }
 
-            setErrors({});
 
         } catch (e) {
 
@@ -87,6 +97,7 @@ const CustomerPage = (props) => {
                 e.response.data.violations.forEach(violation => {
                     ApiErrors[violation.propertyPath] = violation.message;
                 });
+                toast.error("Un erreur est survenue");
 
                 setErrors(ApiErrors);
             }
@@ -99,8 +110,9 @@ const CustomerPage = (props) => {
         <>
             {!editing && <h1>Création d'un client</h1> || <h1>Modification du client</h1>}
 
+            {loading && <FormLoader/>}
 
-            <form onSubmit={handleSubmit}>
+            {!loading && <form onSubmit={handleSubmit}>
                 <Field
                     name="lastName"
                     label="Nom de famille"
@@ -141,7 +153,7 @@ const CustomerPage = (props) => {
                     <Link to="/customers" className="btn btn-link">Retour à la liste</Link>
                 </div>
 
-            </form>
+            </form>}
 
         </>
     );

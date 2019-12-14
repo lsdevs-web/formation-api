@@ -4,32 +4,32 @@ import Select from "../Forms/Select";
 import {Link} from "react-router-dom";
 import CustomersApi from "../../Services/CustomersApi";
 import Axios from "axios";
+import {toast} from "react-toastify";
+import FormLoader from "../Loaders/FormLoader";
 
 const InvoicePage = (props) => {
 
     const {id = "new"} = props.match.params;
-
     const [invoice, setInvoice] = useState({
         amount: "",
         customer: "",
         status: "SENT"
     });
-
     const [errors, setErrors] = useState({
         amount: "",
         customer: "",
         status: ""
     });
-
     const [customers, setCustomers] = useState([]);
-
     const [editing, setEditing] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const fetchCustomers = async () => {
         try {
 
             const data = await CustomersApi.findAll();
             setCustomers(data);
+            setLoading(false);
 
             if (!invoice.customer) {
                 setInvoice({...invoice, customer: data[0].id});
@@ -38,6 +38,7 @@ const InvoicePage = (props) => {
 
         } catch (e) {
 
+            toast.error("Impossible de charger les clients");
             props.history.replace("/invoices")
 
         }
@@ -53,8 +54,10 @@ const InvoicePage = (props) => {
             const {amount, status, customer} = data;
 
             setInvoice({amount, status, customer: customer.id});
+            setLoading(false);
 
         } catch (e) {
+            toast.error("Impossible de charger la facture");
             console.log(e);
         }
     };
@@ -88,13 +91,18 @@ const InvoicePage = (props) => {
                 const response = await Axios.put("https://localhost:8000/api/invoices/" + id, {
                     ...invoice,
                     customer: `/api/customers/${invoice.customer}`
-                })
+                });
+
+                toast.success("La facture à été modifiée");
+
 
             } else {
 
                 const response = await Axios.post("https://localhost:8000/api/invoices",
                     {...invoice, customer: `/api/customers/${invoice.customer}`}
                 );
+
+                toast.success("La facture à été créée");
                 props.history.replace("/invoices");
             }
 
@@ -107,6 +115,7 @@ const InvoicePage = (props) => {
                     ApiErrors[violation.propertyPath] = violation.message;
                 });
 
+                toast.error("Un erreur est survenue");
                 setErrors(ApiErrors);
             }
         }
@@ -116,9 +125,12 @@ const InvoicePage = (props) => {
 
     return (
         <>
+
             {editing && <h1>Modification d'une facture</h1> || <h1>Création d'une facture</h1>}
 
-            <form onSubmit={handleSubmit}>
+            {loading && <FormLoader/>}
+
+            {!loading && <form onSubmit={handleSubmit}>
 
                 <Field
                     name="amount"
@@ -156,7 +168,7 @@ const InvoicePage = (props) => {
                     <Link to="/invoices" className="btn btn-link">Retour aux factures </Link>
                 </div>
 
-            </form>
+            </form>}
 
         </>
     );
