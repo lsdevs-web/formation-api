@@ -3,16 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="619790e3-9d9f-4a08-81a3-87c5a328b960" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/Components/Navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Components/Navbar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/js/Components/Pages/CustomerPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Components/Pages/CustomerPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/Components/Pages/CustomersPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Components/Pages/CustomersPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/Components/Pages/InvoicePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Components/Pages/InvoicePage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/Components/Pages/InvoicesPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Components/Pages/InvoicesPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/Components/Pages/LoginPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Components/Pages/LoginPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/Components/Pages/RegisterPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Components/Pages/RegisterPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/js/Services/CustomersApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Services/CustomersApi.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -215,7 +207,7 @@
       <workItem from="1576254862180" duration="8955000" />
       <workItem from="1576268455559" duration="1414000" />
       <workItem from="1576339468196" duration="2331000" />
-      <workItem from="1576341821585" duration="2950000" />
+      <workItem from="1576341821585" duration="5390000" />
     </task>
     <servers />
   </component>
@@ -235,9 +227,9 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1576342831018" />
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1576343076289">
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1576349286308">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1576343076289" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1576349286308" />
   </component>
 </project>

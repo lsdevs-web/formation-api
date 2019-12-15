@@ -1,9 +1,10 @@
 import Axios from "axios";
 
-function findAll() {
+async function findAll() {
+
     return Axios
         .get("https://localhost:8000/api/customers")
-        .then(response => response.data['hydra:member'])
+        .then(response => response.data['hydra:member']);
 }
 
 function delCustomer(id) {

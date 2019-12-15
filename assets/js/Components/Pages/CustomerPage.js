@@ -83,7 +83,8 @@ const CustomerPage = (props) => {
                 toast.success("Le client à été modifié");
 
             } else {
-                const response = await Axios.post("https://localhost:8000/api/customers", customer);
+                const response = await Axios.post("https://localhost:8000/api/customers", customer)
+                    .then();
                 toast.success("Le client à été créé");
                 props.history.replace("/customers");
             }

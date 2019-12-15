@@ -6,6 +6,7 @@ use App\Entity\Invoice;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Exception;
 
 /**
  * @method Invoice|null find($id, $lockMode = null, $lockVersion = null)
@@ -23,15 +24,21 @@ class InvoiceRepository extends ServiceEntityRepository
 
     public function findNextChrono(User $user)
     {
-        return $this->createQueryBuilder("invoice")
-            ->select("invoice.chrono")
-            ->join("invoice.customer", "customer")
-            ->where("customer.user = :user")
-            ->setParameter("user", $user)
-            ->orderBy("invoice.chrono", "DESC")
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getSingleScalarResult() + 1;
+        try {
+            return $this->createQueryBuilder("invoice")
+                    ->select("invoice.chrono")
+                    ->join("invoice.customer", "customer")
+                    ->where("customer.user = :user")
+                    ->setParameter("user", $user)
+                    ->orderBy("invoice.chrono", "DESC")
+                    ->setMaxResults(1)
+                    ->getQuery()
+                    ->getSingleScalarResult() + 1;
+        } catch (Exception $exception) {
+            return 1;
+        }
+
+
     }
 
 
