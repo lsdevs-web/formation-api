@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="619790e3-9d9f-4a08-81a3-87c5a328b960" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/Components/Pages/CustomerPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Components/Pages/CustomerPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/js/Services/CustomersApi.js" beforeDir="false" afterPath="$PROJECT_DIR$/assets/js/Services/CustomersApi.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -176,6 +175,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="ServiceViewManager">
@@ -208,6 +208,12 @@
       <workItem from="1576268455559" duration="1414000" />
       <workItem from="1576339468196" duration="2331000" />
       <workItem from="1576341821585" duration="5390000" />
+      <workItem from="1576401020402" duration="165000" />
+      <workItem from="1576433874290" duration="172000" />
+      <workItem from="1576434999683" duration="990000" />
+      <workItem from="1576663949053" duration="926000" />
+      <workItem from="1576664950751" duration="1562000" />
+      <workItem from="1578941287169" duration="304000" />
     </task>
     <servers />
   </component>
@@ -219,6 +225,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="552" y="177" key="#Inspections/0.0.1920.1040@0.0.1920.1040" timestamp="1576172045426" />
+    <state x="740" y="273" key="FileChooserDialogImpl" timestamp="1576435438496">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="273" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1576435438496" />
     <state x="461" y="160" key="SettingsEditor" timestamp="1576341867852">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
